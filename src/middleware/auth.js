@@ -60,13 +60,21 @@ async function verifyToken(req, res, next) {
     if (user.isBlocked) {
       return res.status(403).json({ message: "Your account has been blocked" });
     }
+
+    // Premium তখনই, যখন plan premium এবং মেয়াদ শেষ হয়নি
+    const expiresAt = user.subscriptionExpiresAt ? new Date(user.subscriptionExpiresAt) : null;
+    const isPremium =
+      user.subscriptionPlan === "premium" && (!expiresAt || expiresAt > new Date());
+
     // শুধু database-এর মান ব্যবহার হবে, client-এর পাঠানো role নয়
     req.user = {
       id: String(user._id),
       name: user.name,
       email: user.email,
       role: user.role,
+      businessName: user.businessName,
       subscriptionPlan: user.subscriptionPlan || "free",
+      isPremium,
     };
     next();
   } catch (error) {
