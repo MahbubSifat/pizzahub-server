@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { getDb } = require("./config/db");
-
+const { verifyToken, requireRole } = require("./middleware/auth");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,7 +15,7 @@ app.use(
   })
 );
 
-// পরে Stripe webhook route এখানে, express.json()-এর আগে বসবে
+// পরে Stripe webhook route এখানে, express.json()-এর আগে বসবে (raw body লাগে)
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -35,6 +35,29 @@ app.get("/api/health/db", async (req, res) => {
     console.error("Database health check failed:", error.message);
     res.status(500).json({ status: "error", database: "unreachable" });
   }
+});
+
+// ---- Auth পরীক্ষার route (feature route এসে গেলে পরে এগুলো মুছে ফেলা যাবে) ----
+
+// যেকোনো logged-in user: token ঠিক থাকলে নিজের তথ্য ফেরত দেয়
+app.get("/api/me", verifyToken, (req, res) => {
+  res.json({ user: req.user });
+});
+
+// শুধু admin: অন্য role হলে 403
+app.get("/api/admin/ping", verifyToken, requireRole("admin"), (req, res) => {
+  res.json({ message: "Hello admin", user: req.user.email });
+});
+
+// ---- 404 ও global error handler ----
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
+// eslint-disable-next-line no-unused-vars
+app.use((error, req, res, next) => {
+  console.error("Unhandled error:", error.message);
+  res.status(500).json({ message: "Something went wrong on the server" });
 });
 
 // শুধু নিজের PC-তে সরাসরি চালালে listen করবে; Vercel-এ export হওয়া app-ই ব্যবহার হবে
