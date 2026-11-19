@@ -37,17 +37,19 @@ app.get("/api/health/db", async (req, res) => {
   }
 });
 
-// ---- Auth পরীক্ষার route (feature route এসে গেলে পরে এগুলো মুছে ফেলা যাবে) ----
-
-// যেকোনো logged-in user: token ঠিক থাকলে নিজের তথ্য ফেরত দেয়
+// ---- Auth পরীক্ষার route (পরে মুছে ফেলা যাবে) ----
 app.get("/api/me", verifyToken, (req, res) => {
   res.json({ user: req.user });
 });
 
-// শুধু admin: অন্য role হলে 403
 app.get("/api/admin/ping", verifyToken, requireRole("admin"), (req, res) => {
   res.json({ message: "Hello admin", user: req.user.email });
 });
+
+// ---- Menu items ----
+app.use("/api/menu-items", require("./routes/menuItems"));
+app.use("/api/vendor/menu-items", require("./routes/vendorMenuItems"));
+app.use("/api/admin/menu-items", require("./routes/adminMenuItems"));
 
 // ---- 404 ও global error handler ----
 app.use((req, res) => {
