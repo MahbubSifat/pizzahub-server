@@ -61,6 +61,12 @@ app.use("/api/vendor/orders", require("./routes/vendorOrders"));
 // ---- Payments (Stripe, শুধু vendor subscription) ----
 app.use("/api/payments", require("./routes/payments"));
 
+// ---- Dashboards, admin ও profile ----
+app.use("/api/overview", require("./routes/overview"));
+app.use("/api/admin/users", require("./routes/adminUsers"));
+app.use("/api/admin/transactions", require("./routes/adminTransactions"));
+app.use("/api/profile", require("./routes/profile"));
+
 // ---- 404 ও global error handler ----
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
