@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { getDb } = require("./config/db");
-const { verifyToken, requireRole } = require("./middleware/auth");
 const stripeWebhook = require("./routes/stripeWebhook");
 
 const app = express();
@@ -38,15 +37,6 @@ app.get("/api/health/db", async (req, res) => {
     console.error("Database health check failed:", error.message);
     res.status(500).json({ status: "error", database: "unreachable" });
   }
-});
-
-// ---- Auth পরীক্ষার route (পরে মুছে ফেলা যাবে) ----
-app.get("/api/me", verifyToken, (req, res) => {
-  res.json({ user: req.user });
-});
-
-app.get("/api/admin/ping", verifyToken, requireRole("admin"), (req, res) => {
-  res.json({ message: "Hello admin", user: req.user.email });
 });
 
 // ---- Menu items ----
