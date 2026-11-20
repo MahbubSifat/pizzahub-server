@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const { getDb } = require("./config/db");
 const { verifyToken, requireRole } = require("./middleware/auth");
+const stripeWebhook = require("./routes/stripeWebhook");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,7 +16,9 @@ app.use(
   })
 );
 
-// পরে Stripe webhook route এখানে, express.json()-এর আগে বসবে (raw body লাগে)
+// Stripe webhook-এ raw body লাগে, তাই এটা অবশ্যই express.json()-এর আগে
+app.post("/api/payments/webhook", express.raw({ type: "application/json" }), stripeWebhook);
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -50,6 +53,13 @@ app.get("/api/admin/ping", verifyToken, requireRole("admin"), (req, res) => {
 app.use("/api/menu-items", require("./routes/menuItems"));
 app.use("/api/vendor/menu-items", require("./routes/vendorMenuItems"));
 app.use("/api/admin/menu-items", require("./routes/adminMenuItems"));
+
+// ---- Orders ----
+app.use("/api/orders", require("./routes/customerOrders"));
+app.use("/api/vendor/orders", require("./routes/vendorOrders"));
+
+// ---- Payments (Stripe, শুধু vendor subscription) ----
+app.use("/api/payments", require("./routes/payments"));
 
 // ---- 404 ও global error handler ----
 app.use((req, res) => {
