@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const { getDb } = require("./config/db");
 const stripeWebhook = require("./routes/stripeWebhook");
+const meRoutes = require("./routes/me");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -47,6 +48,7 @@ app.use("/api/menu-items", (req, res, next) => {
   }
   next();
 });
+app.use("/api/me", meRoutes);
 app.use("/api/menu-items", require("./routes/menuItems"));
 app.use("/api/vendor/menu-items", require("./routes/vendorMenuItems"));
 app.use("/api/admin/menu-items", require("./routes/adminMenuItems"));
