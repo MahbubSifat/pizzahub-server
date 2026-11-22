@@ -4,10 +4,10 @@ REST API for PizzaHub, built with **Express.js** and **MongoDB**. It serves menu
 
 ## Links
 
-- **Live API:** <SERVER_LIVE_URL>
-- **Server repository:** <SERVER_GITHUB_URL>
-- **Client repository:** <CLIENT_GITHUB_URL>
-- **Live site:** <CLIENT_LIVE_URL>
+- **Live API:** https://pizzahub-server-plum.vercel.app
+- **Server repository:** https://github.com/MahbubSifat/pizzahub-server
+- **Client repository:** https://github.com/MahbubSifat/pizzahub-client
+- **Live site:** https://pizzahub-client-jet.vercel.app
 
 ## Important Features
 
@@ -53,7 +53,7 @@ STRIPE_WEBHOOK_SECRET=
 ## Installation and Running Locally
 
 ```bash
-git clone <SERVER_GITHUB_URL>
+git clone https://github.com/MahbubSifat/pizzahub-server
 cd pizzahub-server
 npm install
 cp .env.example .env     # then fill in the values
