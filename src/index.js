@@ -40,6 +40,13 @@ app.get("/api/health/db", async (req, res) => {
 });
 
 // ---- Menu items ----
+// Public তালিকা ও location ৩০ সেকেন্ড CDN-এ cache হয় (login লাগে এমন /:id এতে পড়ে না)
+app.use("/api/menu-items", (req, res, next) => {
+  if (req.method === "GET" && (req.path === "/" || req.path === "/locations")) {
+    res.set("Cache-Control", "public, s-maxage=30, stale-while-revalidate=120");
+  }
+  next();
+});
 app.use("/api/menu-items", require("./routes/menuItems"));
 app.use("/api/vendor/menu-items", require("./routes/vendorMenuItems"));
 app.use("/api/admin/menu-items", require("./routes/adminMenuItems"));
