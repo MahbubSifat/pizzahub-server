@@ -43,4 +43,30 @@ const adminStatusSchema = z.object({
   status: z.enum(ITEM_STATUSES, { message: "Invalid status" }),
 });
 
-module.exports = { menuItemSchema, availabilitySchema, adminStatusSchema };
+// Order: customerId, vendorId ও status কখনো client থেকে আসে না, server নিজে বসায়
+const orderSchema = z.object({
+  itemId: z.string().regex(/^[a-fA-F0-9]{24}$/, "Invalid item ID"),
+  deliveryDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Please choose a delivery date"),
+  deliveryAddress: z
+    .string()
+    .trim()
+    .min(5, "Delivery address must be at least 5 characters")
+    .max(200, "Delivery address is too long"),
+  message: z.string().trim().max(300, "Message must be 300 characters or fewer").default(""),
+});
+
+const vendorOrderActionSchema = z.object({
+  status: z.enum(["accepted", "rejected"], {
+    message: "Status must be accepted or rejected",
+  }),
+});
+
+module.exports = {
+  menuItemSchema,
+  availabilitySchema,
+  adminStatusSchema,
+  orderSchema,
+  vendorOrderActionSchema,
+};
